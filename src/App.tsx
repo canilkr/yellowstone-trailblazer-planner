@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// Language and routing setup
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
