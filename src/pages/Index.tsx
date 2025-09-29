@@ -8,13 +8,22 @@ import { TripNotes } from "@/components/TripNotes";
 import { TravelTips } from "@/components/TravelTips";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SkipToContent } from "@/components/SkipToContent";
+import { LanguageSwitch } from "@/components/LanguageSwitch";
+import { useLanguage } from "@/contexts/LanguageContext";
 import heroImage from "@/assets/yellowstone-hero.jpg";
 
 const Index = () => {
-  const [tripData, setTripData] = useState<{ city: string; days: number; travelers: number } | null>(null);
+  const { t } = useLanguage();
+  const [tripData, setTripData] = useState<{ 
+    city: string; 
+    days: number; 
+    travelers: number;
+    startDate?: Date;
+    endDate?: Date;
+  } | null>(null);
 
-  const handlePlanTrip = (city: string, days: number, travelers: number) => {
-    setTripData({ city, days, travelers });
+  const handlePlanTrip = (city: string, days: number, travelers: number, startDate?: Date, endDate?: Date) => {
+    setTripData({ city, days, travelers, startDate, endDate });
     // Smooth scroll to budget overview
     setTimeout(() => {
       document.getElementById("trip-overview")?.scrollIntoView({ behavior: "smooth" });
@@ -25,6 +34,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <SkipToContent />
       <ThemeToggle />
+      <LanguageSwitch />
       
       {/* Hero Section */}
       <header className="relative h-[70vh] flex items-center justify-center overflow-hidden" role="banner">
@@ -41,11 +51,11 @@ const Index = () => {
           <div className="flex items-center justify-center gap-3 mb-4">
             <Mountain className="w-12 h-12 text-primary-foreground drop-shadow-lg" />
             <h1 className="text-5xl md:text-6xl font-bold text-primary-foreground drop-shadow-lg">
-              Yellowstone Adventure Planner
+              {t("header.title")}
             </h1>
           </div>
           <p className="text-xl md:text-2xl text-primary-foreground/90 max-w-2xl mx-auto drop-shadow-md">
-            Plan your perfect trip to America's first national park with personalized itineraries and budget estimates
+            {t("header.subtitle")}
           </p>
         </div>
       </header>
@@ -65,7 +75,10 @@ const Index = () => {
             </section>
 
             <section>
-              <ItineraryDisplay days={tripData.days} />
+              <ItineraryDisplay 
+                days={tripData.days} 
+                startDate={tripData.startDate}
+              />
             </section>
           </div>
         )}
@@ -93,14 +106,14 @@ const Index = () => {
             <div className="flex items-center justify-center gap-2">
               <Mountain className="w-5 h-5 text-primary" />
               <p className="text-sm font-semibold text-foreground">
-                Yellowstone Adventure Planner
+                {t("header.title")}
               </p>
             </div>
             <p className="text-xs text-muted-foreground">
-              Plan your dream Yellowstone adventure with confidence
+              {t("footer.tagline")}
             </p>
             <p className="text-xs text-muted-foreground">
-              © 2025 All rights reserved
+              {t("footer.rights")}
             </p>
           </div>
         </div>

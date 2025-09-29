@@ -1,12 +1,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MapPin, Clock, Star, Mountain } from "lucide-react";
+import { format, addDays } from "date-fns";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ItineraryDisplayProps {
   days: number;
+  startDate?: Date;
 }
 
-export const ItineraryDisplay = ({ days }: ItineraryDisplayProps) => {
+export const ItineraryDisplay = ({ days, startDate }: ItineraryDisplayProps) => {
+  const { t } = useLanguage();
   const generateDayItinerary = (day: number) => {
     const itineraries = [
       {
@@ -55,16 +59,17 @@ export const ItineraryDisplay = ({ days }: ItineraryDisplayProps) => {
       <CardHeader className="bg-gradient-to-r from-secondary/20 to-secondary-light/20">
         <CardTitle className="text-2xl font-bold text-foreground flex items-center gap-2">
           <MapPin className="w-6 h-6 text-secondary" />
-          Suggested {days}-Day Itinerary
+          {t("itinerary.title", days.toString())}
         </CardTitle>
         <p className="text-sm text-muted-foreground mt-1">
-          Customized daily plans for your Yellowstone adventure
+          {t("itinerary.subtitle")}
         </p>
       </CardHeader>
       <CardContent className="pt-6">
         <Accordion type="single" collapsible className="w-full space-y-2">
           {Array.from({ length: days }, (_, i) => i + 1).map((day) => {
             const itinerary = generateDayItinerary(day - 1);
+            const dayDate = startDate ? addDays(startDate, day - 1) : null;
             return (
               <AccordionItem
                 key={day}
@@ -72,11 +77,18 @@ export const ItineraryDisplay = ({ days }: ItineraryDisplayProps) => {
                 className="border border-border rounded-lg overflow-hidden"
               >
                 <AccordionTrigger className="px-4 hover:bg-muted/50 hover:no-underline transition-all duration-200">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                      <span className="font-bold text-primary">{day}</span>
+                  <div className="flex flex-col items-start gap-1 w-full">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                        <span className="font-bold text-primary">{day}</span>
+                      </div>
+                      <span className="font-semibold text-foreground">{itinerary.title}</span>
                     </div>
-                    <span className="font-semibold text-foreground">{itinerary.title}</span>
+                    {dayDate && (
+                      <span className="text-xs text-muted-foreground ml-13">
+                        {format(dayDate, "EEEE, MMMM d, yyyy")}
+                      </span>
+                    )}
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-4 pb-4">
