@@ -51,7 +51,7 @@ export const ItineraryDisplay = ({ days }: ItineraryDisplayProps) => {
   };
 
   return (
-    <Card className="w-full shadow-[var(--shadow-card)] border-border/50">
+    <Card className="w-full shadow-[var(--shadow-card)] border-border/50 transition-all duration-300 hover:shadow-xl">
       <CardHeader className="bg-gradient-to-r from-secondary/20 to-secondary-light/20">
         <CardTitle className="text-2xl font-bold text-foreground flex items-center gap-2">
           <MapPin className="w-6 h-6 text-secondary" />
@@ -71,7 +71,7 @@ export const ItineraryDisplay = ({ days }: ItineraryDisplayProps) => {
                 value={`day-${day}`}
                 className="border border-border rounded-lg overflow-hidden"
               >
-                <AccordionTrigger className="px-4 hover:bg-muted/50 hover:no-underline">
+                <AccordionTrigger className="px-4 hover:bg-muted/50 hover:no-underline transition-all duration-200">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
                       <span className="font-bold text-primary">{day}</span>
@@ -86,7 +86,8 @@ export const ItineraryDisplay = ({ days }: ItineraryDisplayProps) => {
                       return (
                         <div
                           key={idx}
-                          className="flex items-start gap-3 p-3 rounded-lg bg-card hover:bg-muted/30 transition-colors"
+                          className="flex items-start gap-3 p-3 rounded-lg bg-card hover:bg-muted/30 transition-all duration-200 hover:scale-[1.01]"
+                          role="article"
                         >
                           <Icon className="w-5 h-5 text-primary mt-0.5" />
                           <div className="flex-1">

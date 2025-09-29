@@ -34,7 +34,7 @@ export const TripNotes = () => {
   };
 
   return (
-    <Card className="w-full shadow-[var(--shadow-card)] border-border/50">
+    <Card className="w-full shadow-[var(--shadow-card)] border-border/50 transition-all duration-300 hover:shadow-xl">
       <CardHeader className="bg-gradient-to-r from-primary-light/20 to-primary/10">
         <CardTitle className="text-2xl font-bold text-foreground flex items-center gap-2">
           <BookOpen className="w-6 h-6 text-primary-light" />
@@ -51,12 +51,14 @@ export const TripNotes = () => {
               placeholder="Write your thoughts, plans, or memories here..."
               value={currentNote}
               onChange={(e) => setCurrentNote(e.target.value)}
-              className="min-h-32 bg-background border-border focus:ring-primary resize-none"
+              className="min-h-32 bg-background border-border focus:ring-primary resize-none transition-all duration-200 focus:scale-[1.01]"
+              aria-label="Trip notes"
             />
             <Button
               onClick={saveNote}
               disabled={!currentNote.trim()}
-              className="bg-primary hover:bg-primary-dark text-primary-foreground"
+              className="bg-primary hover:bg-primary-dark text-primary-foreground transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+              aria-label="Save trip note"
             >
               <Save className="w-4 h-4 mr-2" />
               Save Note
@@ -64,10 +66,10 @@ export const TripNotes = () => {
           </div>
 
           {notes.length > 0 && (
-            <div className="space-y-3 mt-6">
+            <div className="space-y-3 mt-6" role="list" aria-label="Saved notes">
               <h3 className="font-semibold text-foreground">Saved Notes</h3>
               {notes.map((note) => (
-                <Card key={note.id} className="border-border bg-card">
+                <Card key={note.id} className="border-border bg-card transition-all duration-300 hover:shadow-lg hover:scale-[1.01]" role="listitem">
                   <CardContent className="pt-4">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
@@ -83,7 +85,8 @@ export const TripNotes = () => {
                         variant="ghost"
                         size="icon"
                         onClick={() => deleteNote(note.id)}
-                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10 transition-all duration-200 hover:scale-110"
+                        aria-label={`Delete note from ${note.timestamp.toLocaleDateString()}`}
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>

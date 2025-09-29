@@ -82,7 +82,7 @@ export const BudgetOverview = ({ city, days, travelers }: BudgetOverviewProps) =
   ];
 
   return (
-    <Card className="w-full shadow-[var(--shadow-card)] border-border/50">
+    <Card className="w-full shadow-[var(--shadow-card)] border-border/50 transition-all duration-300 hover:shadow-xl">
       <CardHeader className="bg-gradient-to-r from-primary/10 to-primary-light/10">
         <CardTitle className="text-2xl font-bold text-foreground flex items-center gap-2">
           <DollarSign className="w-6 h-6 text-primary" />
@@ -93,11 +93,11 @@ export const BudgetOverview = ({ city, days, travelers }: BudgetOverviewProps) =
         </p>
       </CardHeader>
       <CardContent className="pt-6">
-        <div className="space-y-4">
+        <div className="space-y-4" role="list" aria-label="Budget breakdown">
           {budgetItems.map((item) => {
             const Icon = item.icon;
             return (
-              <div key={item.label} className="flex items-center justify-between p-3 rounded-lg bg-card hover:bg-muted/30 transition-colors">
+              <div key={item.label} className="flex items-center justify-between p-3 rounded-lg bg-card hover:bg-muted/30 transition-all duration-200 hover:scale-[1.01]" role="listitem">
                 <div className="flex items-center gap-3">
                   <Icon className={`w-5 h-5 ${item.color}`} />
                   <div>
@@ -107,7 +107,7 @@ export const BudgetOverview = ({ city, days, travelers }: BudgetOverviewProps) =
                     )}
                   </div>
                 </div>
-                <span className="font-semibold text-foreground">
+                <span className="font-semibold text-foreground" aria-label={`${item.label} cost: $${item.amount.toLocaleString()}`}>
                   ${item.amount.toLocaleString()}
                 </span>
               </div>

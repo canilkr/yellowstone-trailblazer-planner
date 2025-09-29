@@ -42,7 +42,7 @@ export const PhotoGallery = () => {
   };
 
   return (
-    <Card className="w-full shadow-[var(--shadow-card)] border-border/50">
+    <Card className="w-full shadow-[var(--shadow-card)] border-border/50 transition-all duration-300 hover:shadow-xl">
       <CardHeader className="bg-gradient-to-r from-accent/20 to-accent/10">
         <CardTitle className="text-2xl font-bold text-foreground flex items-center gap-2">
           <Camera className="w-6 h-6 text-accent" />
@@ -57,7 +57,9 @@ export const PhotoGallery = () => {
           <div className="flex items-center justify-center w-full">
             <label
               htmlFor="photo-upload"
-              className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50 transition-colors"
+              className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50 transition-all duration-300 hover:scale-[1.01]"
+              role="button"
+              aria-label="Upload photos"
             >
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
                 <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
@@ -78,9 +80,9 @@ export const PhotoGallery = () => {
           </div>
 
           {photos.length > 0 && (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6" role="list" aria-label="Uploaded photos">
               {photos.map((photo) => (
-                <div key={photo.id} className="relative group">
+                <div key={photo.id} className="relative group transition-all duration-300 hover:scale-105" role="listitem">
                   <img
                     src={photo.url}
                     alt={photo.name}
@@ -89,8 +91,9 @@ export const PhotoGallery = () => {
                   <Button
                     variant="destructive"
                     size="icon"
-                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-300"
                     onClick={() => removePhoto(photo.id)}
+                    aria-label={`Remove photo ${photo.name}`}
                   >
                     <X className="w-4 h-4" />
                   </Button>

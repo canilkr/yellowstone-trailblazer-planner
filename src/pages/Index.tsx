@@ -6,6 +6,8 @@ import { ItineraryDisplay } from "@/components/ItineraryDisplay";
 import { PhotoGallery } from "@/components/PhotoGallery";
 import { TripNotes } from "@/components/TripNotes";
 import { TravelTips } from "@/components/TravelTips";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { SkipToContent } from "@/components/SkipToContent";
 import heroImage from "@/assets/yellowstone-hero.jpg";
 
 const Index = () => {
@@ -21,8 +23,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SkipToContent />
+      <ThemeToggle />
+      
       {/* Hero Section */}
-      <header className="relative h-[70vh] flex items-center justify-center overflow-hidden">
+      <header className="relative h-[70vh] flex items-center justify-center overflow-hidden" role="banner">
         <div className="absolute inset-0">
           <img
             src={heroImage}
@@ -46,7 +51,7 @@ const Index = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-12 space-y-12 max-w-7xl">
+      <main id="main-content" className="container mx-auto px-4 py-12 space-y-12 max-w-7xl" tabIndex={-1}>
         {/* Trip Planner Form */}
         <section className="animate-fade-in">
           <TripPlannerForm onPlanTrip={handlePlanTrip} />

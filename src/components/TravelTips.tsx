@@ -40,7 +40,7 @@ export const TravelTips = () => {
   ];
 
   return (
-    <Card className="w-full shadow-[var(--shadow-card)] border-border/50">
+    <Card className="w-full shadow-[var(--shadow-card)] border-border/50 transition-all duration-300 hover:shadow-xl">
       <CardHeader className="bg-gradient-to-r from-secondary-light/20 to-secondary/20">
         <CardTitle className="text-2xl font-bold text-foreground flex items-center gap-2">
           <Lightbulb className="w-6 h-6 text-secondary" />
@@ -55,16 +55,16 @@ export const TravelTips = () => {
           {tips.map((tip, index) => {
             const Icon = tip.icon;
             return (
-              <div key={index} className="space-y-3">
+              <div key={index} className="space-y-3 transition-all duration-300 hover:scale-[1.02]">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                     <Icon className="w-5 h-5 text-primary" />
                   </div>
                   <h3 className="font-semibold text-foreground">{tip.title}</h3>
                 </div>
-                <ul className="space-y-2">
+                <ul className="space-y-2" role="list" aria-label={`${tip.title} items`}>
                   {tip.items.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
+                    <li key={idx} className="flex items-start gap-2" role="listitem">
                       <span className="text-primary mt-1.5">•</span>
                       <span className="text-sm text-muted-foreground">{item}</span>
                     </li>

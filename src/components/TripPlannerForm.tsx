@@ -22,14 +22,14 @@ export const TripPlannerForm = ({ onPlanTrip }: TripPlannerFormProps) => {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-[var(--shadow-card)] border-border/50">
+    <Card className="w-full max-w-2xl mx-auto shadow-[var(--shadow-card)] border-border/50 transition-all duration-300 hover:shadow-xl">
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-center text-foreground">
           Plan Your Yellowstone Adventure
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6" aria-label="Trip planning form">
           <div className="space-y-2">
             <Label htmlFor="city" className="text-foreground flex items-center gap-2">
               <MapPin className="w-4 h-4 text-primary" />
@@ -42,7 +42,8 @@ export const TripPlannerForm = ({ onPlanTrip }: TripPlannerFormProps) => {
               value={city}
               onChange={(e) => setCity(e.target.value)}
               required
-              className="bg-background border-border focus:ring-primary"
+              className="bg-background border-border focus:ring-primary transition-all duration-200 focus:scale-[1.02]"
+              aria-required="true"
             />
           </div>
           
@@ -59,7 +60,10 @@ export const TripPlannerForm = ({ onPlanTrip }: TripPlannerFormProps) => {
               value={days}
               onChange={(e) => setDays(Math.max(1, parseInt(e.target.value) || 1))}
               required
-              className="bg-background border-border focus:ring-primary"
+              className="bg-background border-border focus:ring-primary transition-all duration-200 focus:scale-[1.02]"
+              aria-required="true"
+              aria-valuemin={1}
+              aria-valuemax={14}
             />
           </div>
 
@@ -76,14 +80,18 @@ export const TripPlannerForm = ({ onPlanTrip }: TripPlannerFormProps) => {
               value={travelers}
               onChange={(e) => setTravelers(Math.max(1, parseInt(e.target.value) || 1))}
               required
-              className="bg-background border-border focus:ring-primary"
+              className="bg-background border-border focus:ring-primary transition-all duration-200 focus:scale-[1.02]"
+              aria-required="true"
+              aria-valuemin={1}
+              aria-valuemax={20}
             />
           </div>
 
           <Button
             type="submit" 
-            className="w-full bg-primary hover:bg-primary-dark text-primary-foreground transition-all duration-300"
+            className="w-full bg-primary hover:bg-primary-dark text-primary-foreground transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
             size="lg"
+            aria-label="Calculate personalized trip plan"
           >
             Calculate My Trip
           </Button>
