@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { MapPin, Calendar, Users } from "lucide-react";
-import { format } from "date-fns";
+import { format, differenceInDays } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -21,6 +21,16 @@ export const TripPlannerForm = ({ onPlanTrip }: TripPlannerFormProps) => {
   const [travelers, setTravelers] = useState(2);
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
+
+  // Auto-calculate days when dates are selected
+  useEffect(() => {
+    if (startDate && endDate) {
+      const calculatedDays = differenceInDays(endDate, startDate) + 1;
+      if (calculatedDays > 0) {
+        setDays(calculatedDays);
+      }
+    }
+  }, [startDate, endDate]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -132,11 +142,21 @@ export const TripPlannerForm = ({ onPlanTrip }: TripPlannerFormProps) => {
               value={days}
               onChange={(e) => setDays(Math.max(1, parseInt(e.target.value) || 1))}
               required
-              className="bg-background border-border focus:ring-primary transition-all duration-200 focus:scale-[1.02]"
+              disabled={!!(startDate && endDate)}
+              className={cn(
+                "bg-background border-border focus:ring-primary transition-all duration-200 focus:scale-[1.02]",
+                startDate && endDate && "opacity-60 cursor-not-allowed"
+              )}
               aria-required="true"
               aria-valuemin={1}
               aria-valuemax={14}
+              title={startDate && endDate ? "Days are calculated from selected dates" : "Enter number of days"}
             />
+            {startDate && endDate && (
+              <p className="text-xs text-muted-foreground">
+                Calculated from selected dates ({format(startDate, "MMM d")} - {format(endDate, "MMM d")})
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
