@@ -9,10 +9,10 @@ import { TravelTips } from "@/components/TravelTips";
 import heroImage from "@/assets/yellowstone-hero.jpg";
 
 const Index = () => {
-  const [tripData, setTripData] = useState<{ city: string; days: number } | null>(null);
+  const [tripData, setTripData] = useState<{ city: string; days: number; travelers: number } | null>(null);
 
-  const handlePlanTrip = (city: string, days: number) => {
-    setTripData({ city, days });
+  const handlePlanTrip = (city: string, days: number, travelers: number) => {
+    setTripData({ city, days, travelers });
     // Smooth scroll to budget overview
     setTimeout(() => {
       document.getElementById("trip-overview")?.scrollIntoView({ behavior: "smooth" });
@@ -56,7 +56,7 @@ const Index = () => {
         {tripData && (
           <div id="trip-overview" className="space-y-12 animate-fade-in">
             <section>
-              <BudgetOverview city={tripData.city} days={tripData.days} />
+              <BudgetOverview city={tripData.city} days={tripData.days} travelers={tripData.travelers} />
             </section>
 
             <section>

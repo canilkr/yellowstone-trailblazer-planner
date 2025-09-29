@@ -4,28 +4,81 @@ import { DollarSign, Plane, Hotel, Car, Utensils, Ticket } from "lucide-react";
 interface BudgetOverviewProps {
   city: string;
   days: number;
+  travelers: number;
 }
 
-export const BudgetOverview = ({ city, days }: BudgetOverviewProps) => {
-  // Dynamic pricing calculations
-  const flightCost = 400 * 2; // Round trip for 2 people
-  const hotelPerNight = 180;
+export const BudgetOverview = ({ city, days, travelers }: BudgetOverviewProps) => {
+  // Dynamic pricing calculations based on number of travelers
+  
+  // Flights: $400 per person round trip
+  const flightCost = 400 * travelers;
+  
+  // Hotel: Base $180/night for 1-2 people, additional $60/night per extra person
+  const hotelPerNight = 180 + (travelers > 2 ? (travelers - 2) * 60 : 0);
   const hotelTotal = hotelPerNight * days;
-  const carRental = 60 * days;
-  const foodPerDay = 80 * 2; // For 2 people
+  
+  // Car Rental: $60/day for 1-5 people, additional $60/day per extra vehicle for 6+ people
+  const vehiclesNeeded = Math.ceil(travelers / 5);
+  const carRental = 60 * days * vehiclesNeeded;
+  
+  // Food: $80 per person per day
+  const foodPerDay = 80 * travelers;
   const foodTotal = foodPerDay * days;
-  const activities = 100 * days;
-  const parkEntrance = 35; // One-time fee
+  
+  // Activities: $50 per person per day
+  const activitiesPerDay = 50 * travelers;
+  const activities = activitiesPerDay * days;
+  
+  // Park Entrance: Choose cheaper option between vehicle pass ($35/vehicle) or per-person pass ($20/person)
+  const parkEntranceVehicle = 35 * vehiclesNeeded;
+  const parkEntrancePerson = 20 * travelers;
+  const parkEntrance = Math.min(parkEntranceVehicle, parkEntrancePerson);
   
   const totalCost = flightCost + hotelTotal + carRental + foodTotal + activities + parkEntrance;
 
   const budgetItems = [
-    { icon: Plane, label: "Round-trip Flights", amount: flightCost, color: "text-accent" },
-    { icon: Hotel, label: "Accommodation", amount: hotelTotal, color: "text-primary", detail: `${days} nights @ $${hotelPerNight}/night` },
-    { icon: Car, label: "Car Rental", amount: carRental, color: "text-secondary", detail: `${days} days @ $60/day` },
-    { icon: Utensils, label: "Food & Dining", amount: foodTotal, color: "text-secondary-light", detail: `${days} days @ $${foodPerDay}/day` },
-    { icon: Ticket, label: "Activities & Tours", amount: activities, color: "text-primary-light", detail: `Estimated $100/day` },
-    { icon: DollarSign, label: "Park Entrance Fee", amount: parkEntrance, color: "text-muted-foreground" },
+    { 
+      icon: Plane, 
+      label: "Round-trip Flights", 
+      amount: flightCost, 
+      color: "text-accent",
+      detail: `${travelers} ${travelers === 1 ? 'traveler' : 'travelers'} @ $400/person`
+    },
+    { 
+      icon: Hotel, 
+      label: "Accommodation", 
+      amount: hotelTotal, 
+      color: "text-primary", 
+      detail: `${days} nights @ $${hotelPerNight}/night`
+    },
+    { 
+      icon: Car, 
+      label: "Car Rental", 
+      amount: carRental, 
+      color: "text-secondary", 
+      detail: `${vehiclesNeeded} ${vehiclesNeeded === 1 ? 'vehicle' : 'vehicles'} × ${days} days`
+    },
+    { 
+      icon: Utensils, 
+      label: "Food & Dining", 
+      amount: foodTotal, 
+      color: "text-secondary-light", 
+      detail: `${travelers} ${travelers === 1 ? 'person' : 'people'} × ${days} days @ $80/day`
+    },
+    { 
+      icon: Ticket, 
+      label: "Activities & Tours", 
+      amount: activities, 
+      color: "text-primary-light", 
+      detail: `${travelers} ${travelers === 1 ? 'person' : 'people'} × ${days} days @ $50/day`
+    },
+    { 
+      icon: DollarSign, 
+      label: "Park Entrance Fee", 
+      amount: parkEntrance, 
+      color: "text-muted-foreground",
+      detail: parkEntrance === parkEntranceVehicle ? `Vehicle pass (${vehiclesNeeded} ${vehiclesNeeded === 1 ? 'vehicle' : 'vehicles'})` : 'Per-person pass (better value)'
+    },
   ];
 
   return (
@@ -36,7 +89,7 @@ export const BudgetOverview = ({ city, days }: BudgetOverviewProps) => {
           Budget Overview for {days} Days
         </CardTitle>
         <p className="text-sm text-muted-foreground mt-1">
-          Traveling from {city} • 2 People
+          Traveling from {city} • {travelers} {travelers === 1 ? 'Traveler' : 'Travelers'}
         </p>
       </CardHeader>
       <CardContent className="pt-6">
@@ -69,7 +122,7 @@ export const BudgetOverview = ({ city, days }: BudgetOverviewProps) => {
               </span>
             </div>
             <p className="text-xs text-muted-foreground mt-2 text-center">
-              Prices are estimates for 2 people and may vary based on season and availability
+              Prices are estimates for {travelers} {travelers === 1 ? 'traveler' : 'travelers'} and may vary based on season and availability
             </p>
           </div>
         </div>

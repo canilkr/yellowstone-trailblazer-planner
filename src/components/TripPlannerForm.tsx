@@ -3,20 +3,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin, Calendar } from "lucide-react";
+import { MapPin, Calendar, Users } from "lucide-react";
 
 interface TripPlannerFormProps {
-  onPlanTrip: (city: string, days: number) => void;
+  onPlanTrip: (city: string, days: number, travelers: number) => void;
 }
 
 export const TripPlannerForm = ({ onPlanTrip }: TripPlannerFormProps) => {
   const [city, setCity] = useState("");
   const [days, setDays] = useState(3);
+  const [travelers, setTravelers] = useState(2);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (city.trim()) {
-      onPlanTrip(city, days);
+      onPlanTrip(city, days, travelers);
     }
   };
 
@@ -62,7 +63,24 @@ export const TripPlannerForm = ({ onPlanTrip }: TripPlannerFormProps) => {
             />
           </div>
 
-          <Button 
+          <div className="space-y-2">
+            <Label htmlFor="travelers" className="text-foreground flex items-center gap-2">
+              <Users className="w-4 h-4 text-primary" />
+              Number of Travelers
+            </Label>
+            <Input
+              id="travelers"
+              type="number"
+              min="1"
+              max="20"
+              value={travelers}
+              onChange={(e) => setTravelers(Math.max(1, parseInt(e.target.value) || 1))}
+              required
+              className="bg-background border-border focus:ring-primary"
+            />
+          </div>
+
+          <Button
             type="submit" 
             className="w-full bg-primary hover:bg-primary-dark text-primary-foreground transition-all duration-300"
             size="lg"
