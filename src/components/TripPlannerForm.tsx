@@ -11,11 +11,12 @@ import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface TripPlannerFormProps {
-  onPlanTrip: (city: string, days: number, travelers: number, startDate?: Date, endDate?: Date) => void;
+  onPlanTrip: (origin: string, city: string, days: number, travelers: number, startDate?: Date, endDate?: Date) => void;
 }
 
 export const TripPlannerForm = ({ onPlanTrip }: TripPlannerFormProps) => {
   const { t } = useLanguage();
+  const [origin, setOrigin] = useState("");
   const [city, setCity] = useState("");
   const [days, setDays] = useState(3);
   const [travelers, setTravelers] = useState(2);
@@ -34,8 +35,8 @@ export const TripPlannerForm = ({ onPlanTrip }: TripPlannerFormProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (city.trim()) {
-      onPlanTrip(city, days, travelers, startDate, endDate);
+    if (origin.trim() && city.trim()) {
+      onPlanTrip(origin, city, days, travelers, startDate, endDate);
     }
   };
 
@@ -48,6 +49,23 @@ export const TripPlannerForm = ({ onPlanTrip }: TripPlannerFormProps) => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6" aria-label="Trip planning form">
+          <div className="space-y-2">
+            <Label htmlFor="origin" className="text-foreground flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-primary" />
+              Origin City
+            </Label>
+            <Input
+              id="origin"
+              type="text"
+              placeholder="e.g., Austin"
+              value={origin}
+              onChange={(e) => setOrigin(e.target.value)}
+              required
+              className="bg-background border-border focus:ring-primary transition-all duration-200 focus:scale-[1.02]"
+              aria-required="true"
+            />
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="city" className="text-foreground flex items-center gap-2">
               <MapPin className="w-4 h-4 text-primary" />

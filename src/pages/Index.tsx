@@ -22,6 +22,7 @@ const Index = () => {
   const { t } = useLanguage();
   const { user } = useAuth();
   const [tripData, setTripData] = useState<{ 
+    origin: string;
     city: string; 
     days: number; 
     travelers: number;
@@ -30,8 +31,8 @@ const Index = () => {
   } | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const handlePlanTrip = (city: string, days: number, travelers: number, startDate?: Date, endDate?: Date) => {
-    setTripData({ city, days, travelers, startDate, endDate });
+  const handlePlanTrip = (origin: string, city: string, days: number, travelers: number, startDate?: Date, endDate?: Date) => {
+    setTripData({ origin, city, days, travelers, startDate, endDate });
     // Smooth scroll to budget overview
     setTimeout(() => {
       document.getElementById("trip-overview")?.scrollIntoView({ behavior: "smooth" });
@@ -160,6 +161,7 @@ const Index = () => {
             
             <section>
               <BudgetOverview 
+                origin={tripData.origin}
                 city={tripData.city} 
                 days={tripData.days} 
                 travelers={tripData.travelers}

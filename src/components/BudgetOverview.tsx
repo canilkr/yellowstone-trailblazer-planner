@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, Plane, Hotel, Car, Utensils, Ticket } from "lucide-react";
 
 interface BudgetOverviewProps {
+  origin: string;
   city: string;
   days: number;
   travelers: number;
@@ -9,7 +10,7 @@ interface BudgetOverviewProps {
   endDate?: Date;
 }
 
-export const BudgetOverview = ({ city, days, travelers, startDate, endDate }: BudgetOverviewProps) => {
+export const BudgetOverview = ({ origin, city, days, travelers, startDate, endDate }: BudgetOverviewProps) => {
   // Calculate smart estimates based on destination and season
   const getSeasonalMultiplier = () => {
     if (!startDate) return 1.0;
@@ -113,7 +114,7 @@ export const BudgetOverview = ({ city, days, travelers, startDate, endDate }: Bu
           Budget Overview for {days} Days
         </CardTitle>
         <p className="text-sm text-muted-foreground mt-1">
-          Traveling to {city} • {travelers} {travelers === 1 ? 'Traveler' : 'Travelers'}
+          {origin} to {city} • {travelers} {travelers === 1 ? 'Traveler' : 'Travelers'}
           {startDate && <span className="ml-2">• {getSeason()} Season</span>}
         </p>
       </CardHeader>
