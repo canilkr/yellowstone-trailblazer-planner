@@ -158,7 +158,13 @@ const Index = () => {
             )}
             
             <section>
-              <BudgetOverview city={tripData.city} days={tripData.days} travelers={tripData.travelers} />
+              <BudgetOverview 
+                city={tripData.city} 
+                days={tripData.days} 
+                travelers={tripData.travelers}
+                startDate={tripData.startDate}
+                endDate={tripData.endDate}
+              />
             </section>
 
             <section>

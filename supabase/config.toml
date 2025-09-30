@@ -1,1 +1,10 @@
 project_id = "ycucjdelcivtzmpjfwfo"
+
+[functions.get-flight-prices]
+verify_jwt = false
+
+[functions.get-hotel-prices]
+verify_jwt = false
+
+[functions.get-car-rental-prices]
+verify_jwt = false
