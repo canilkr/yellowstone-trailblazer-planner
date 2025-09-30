@@ -10,6 +10,7 @@ import { TravelTips } from "@/components/TravelTips";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SkipToContent } from "@/components/SkipToContent";
 import { LanguageSwitch } from "@/components/LanguageSwitch";
+import { TravelChatbot } from "@/components/TravelChatbot";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -211,6 +212,9 @@ const Index = () => {
           </div>
         </div>
       </footer>
+
+      {/* AI Travel Chatbot */}
+      <TravelChatbot />
     </div>
   );
 };
