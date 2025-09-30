@@ -25,7 +25,7 @@ export const TripPlannerForm = ({ onPlanTrip }: TripPlannerFormProps) => {
   // Auto-calculate days when dates are selected
   useEffect(() => {
     if (startDate && endDate) {
-      const calculatedDays = differenceInDays(endDate, startDate) + 1;
+      const calculatedDays = differenceInDays(endDate, startDate);
       if (calculatedDays > 0) {
         setDays(calculatedDays);
       }
