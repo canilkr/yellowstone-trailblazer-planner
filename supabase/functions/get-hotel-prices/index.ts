@@ -18,6 +18,12 @@ serve(async (req) => {
       throw new Error('AMADEUS_API_KEY not configured');
     }
 
+    const [clientId, clientSecret] = AMADEUS_API_KEY.split(':');
+    
+    if (!clientId || !clientSecret) {
+      throw new Error('AMADEUS_API_KEY must be in format: client_id:client_secret');
+    }
+
     // Get access token
     const tokenResponse = await fetch('https://test.api.amadeus.com/v1/security/oauth2/token', {
       method: 'POST',
@@ -26,14 +32,15 @@ serve(async (req) => {
       },
       body: new URLSearchParams({
         grant_type: 'client_credentials',
-        client_id: AMADEUS_API_KEY.split(':')[0],
-        client_secret: AMADEUS_API_KEY.split(':')[1],
+        client_id: clientId.trim(),
+        client_secret: clientSecret.trim(),
       }),
     });
 
     if (!tokenResponse.ok) {
-      console.error('Token error:', await tokenResponse.text());
-      throw new Error('Failed to get Amadeus access token');
+      const errorText = await tokenResponse.text();
+      console.error('Token error:', errorText);
+      throw new Error(`Failed to get Amadeus access token: ${errorText}`);
     }
 
     const { access_token } = await tokenResponse.json();
