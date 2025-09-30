@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Mountain } from "lucide-react";
+import { Mountain, User, BookmarkPlus, Save } from "lucide-react";
+import { Link } from "react-router-dom";
 import { TripPlannerForm } from "@/components/TripPlannerForm";
 import { BudgetOverview } from "@/components/BudgetOverview";
 import { ItineraryDisplay } from "@/components/ItineraryDisplay";
@@ -9,11 +10,16 @@ import { TravelTips } from "@/components/TravelTips";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SkipToContent } from "@/components/SkipToContent";
 import { LanguageSwitch } from "@/components/LanguageSwitch";
+import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 import heroImage from "@/assets/yellowstone-hero.jpg";
 
 const Index = () => {
   const { t } = useLanguage();
+  const { user } = useAuth();
   const [tripData, setTripData] = useState<{ 
     city: string; 
     days: number; 
@@ -21,6 +27,7 @@ const Index = () => {
     startDate?: Date;
     endDate?: Date;
   } | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const handlePlanTrip = (city: string, days: number, travelers: number, startDate?: Date, endDate?: Date) => {
     setTripData({ city, days, travelers, startDate, endDate });
@@ -30,11 +37,82 @@ const Index = () => {
     }, 100);
   };
 
+  const handleSaveTrip = async () => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to save your trip",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!tripData || !tripData.startDate || !tripData.endDate) {
+      toast({
+        title: "Invalid trip data",
+        description: "Please make sure all trip details are filled",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const { error } = await supabase.from("saved_trips").insert({
+        user_id: user.id,
+        destination: tripData.city,
+        start_date: tripData.startDate.toISOString().split('T')[0],
+        end_date: tripData.endDate.toISOString().split('T')[0],
+        days: tripData.days,
+        travelers: tripData.travelers,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Trip saved!",
+        description: "Your trip has been saved successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save trip",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <SkipToContent />
       <ThemeToggle />
       <LanguageSwitch />
+      
+      {/* Top Navigation */}
+      <nav className="fixed top-4 right-20 z-50 flex gap-2">
+        {user ? (
+          <>
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/saved-trips">
+                <BookmarkPlus className="h-4 w-4 mr-2" />
+                My Trips
+              </Link>
+            </Button>
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/profile">
+                <User className="h-4 w-4 mr-2" />
+                Profile
+              </Link>
+            </Button>
+          </>
+        ) : (
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/auth">Sign In</Link>
+          </Button>
+        )}
+      </nav>
       
       {/* Hero Section */}
       <header className="relative h-[70vh] flex items-center justify-center overflow-hidden" role="banner">
@@ -70,6 +148,15 @@ const Index = () => {
         {/* Trip Overview - Only shown after planning */}
         {tripData && (
           <div id="trip-overview" className="space-y-12 animate-fade-in">
+            {user && tripData.startDate && tripData.endDate && (
+              <div className="flex justify-center">
+                <Button onClick={handleSaveTrip} disabled={saving} size="lg">
+                  <Save className="h-5 w-5 mr-2" />
+                  {saving ? "Saving..." : "Save This Trip"}
+                </Button>
+              </div>
+            )}
+            
             <section>
               <BudgetOverview city={tripData.city} days={tripData.days} travelers={tripData.travelers} />
             </section>
