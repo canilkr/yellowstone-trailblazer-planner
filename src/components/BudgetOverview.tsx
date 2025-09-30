@@ -30,7 +30,8 @@ export const BudgetOverview = ({ city, days, travelers, startDate, endDate }: Bu
   const baseCarPerDay = 60;
 
   // Calculate costs with seasonal pricing
-  const flightCost = Math.round(baseFlightPrice * travelers * seasonalMultiplier);
+  const flightPerPerson = Math.round(baseFlightPrice * seasonalMultiplier);
+  const flightCost = flightPerPerson * travelers;
   const hotelPerNight = Math.round(baseHotelPerNight * seasonalMultiplier);
   const hotelTotal = hotelPerNight * days;
   const vehiclesNeeded = Math.ceil(travelers / 5);
@@ -57,7 +58,7 @@ export const BudgetOverview = ({ city, days, travelers, startDate, endDate }: Bu
       label: "Round-trip Flights", 
       amount: flightCost, 
       color: "text-accent",
-      detail: `${travelers} ${travelers === 1 ? 'traveler' : 'travelers'} @ $400/person`
+      detail: `${travelers} ${travelers === 1 ? 'traveler' : 'travelers'} @ $${flightPerPerson}/person`
     },
     { 
       icon: Hotel, 
