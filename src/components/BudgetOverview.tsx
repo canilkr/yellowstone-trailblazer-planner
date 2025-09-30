@@ -1,8 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, Plane, Hotel, Car, Utensils, Ticket, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { DollarSign, Plane, Hotel, Car, Utensils, Ticket } from "lucide-react";
 
 interface BudgetOverviewProps {
   city: string;
@@ -13,92 +10,31 @@ interface BudgetOverviewProps {
 }
 
 export const BudgetOverview = ({ city, days, travelers, startDate, endDate }: BudgetOverviewProps) => {
-  const { toast } = useToast();
-  const [loading, setLoading] = useState(true);
-  const [prices, setPrices] = useState({
-    flight: 400 * travelers,
-    hotelPerNight: 180,
-    carRental: 60 * days,
-  });
+  // Calculate smart estimates based on destination and season
+  const getSeasonalMultiplier = () => {
+    if (!startDate) return 1.0;
+    const month = startDate.getMonth();
+    // Peak summer season (June-August)
+    if (month >= 5 && month <= 7) return 1.3;
+    // Shoulder season (May, September)
+    if (month === 4 || month === 8) return 1.1;
+    // Off-season discount
+    return 0.9;
+  };
 
-  useEffect(() => {
-    const fetchLivePrices = async () => {
-      if (!startDate || !endDate) {
-        setLoading(false);
-        return;
-      }
+  const seasonalMultiplier = getSeasonalMultiplier();
+  
+  // Smart price estimates
+  const baseFlightPrice = 400;
+  const baseHotelPerNight = 180;
+  const baseCarPerDay = 60;
 
-      setLoading(true);
-      
-      try {
-        // Format dates for API
-        const formatDate = (date: Date) => date.toISOString().split('T')[0];
-        const depDate = formatDate(startDate);
-        const retDate = formatDate(endDate);
-
-        // Fetch flight prices
-        const flightPromise = supabase.functions.invoke('get-flight-prices', {
-          body: {
-            origin: 'NYC', // Default origin
-            destination: city.substring(0, 3).toUpperCase(), // Use first 3 letters as airport code
-            departureDate: depDate,
-            returnDate: retDate,
-            travelers: travelers,
-          },
-        });
-
-        // Fetch hotel prices
-        const hotelPromise = supabase.functions.invoke('get-hotel-prices', {
-          body: {
-            cityCode: city.substring(0, 3).toUpperCase(),
-            checkInDate: depDate,
-            checkOutDate: retDate,
-            adults: travelers,
-          },
-        });
-
-        // Fetch car rental prices
-        const carPromise = supabase.functions.invoke('get-car-rental-prices', {
-          body: {
-            pickupLocation: city.substring(0, 3).toUpperCase(),
-            pickupDate: depDate,
-            dropoffDate: retDate,
-          },
-        });
-
-        const [flightRes, hotelRes, carRes] = await Promise.all([
-          flightPromise,
-          hotelPromise,
-          carPromise,
-        ]);
-
-        // Update prices with live data or keep defaults
-        setPrices({
-          flight: flightRes.data?.price || 400 * travelers,
-          hotelPerNight: hotelRes.data?.pricePerNight || 180,
-          carRental: carRes.data?.totalPrice || 60 * days,
-        });
-
-      } catch (error) {
-        console.error('Error fetching live prices:', error);
-        toast({
-          title: "Using estimated prices",
-          description: "Could not fetch live pricing data. Showing estimates instead.",
-          variant: "default",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchLivePrices();
-  }, [city, days, travelers, startDate, endDate, toast]);
-
-  // Calculate costs using live or default prices
-  const flightCost = prices.flight;
-  const hotelTotal = prices.hotelPerNight * days;
+  // Calculate costs with seasonal pricing
+  const flightCost = Math.round(baseFlightPrice * travelers * seasonalMultiplier);
+  const hotelPerNight = Math.round(baseHotelPerNight * seasonalMultiplier);
+  const hotelTotal = hotelPerNight * days;
   const vehiclesNeeded = Math.ceil(travelers / 5);
-  const carRental = prices.carRental;
+  const carRental = Math.round(baseCarPerDay * days * seasonalMultiplier);
   
   // Food: $80 per person per day
   const foodPerDay = 80 * travelers;
@@ -128,7 +64,7 @@ export const BudgetOverview = ({ city, days, travelers, startDate, endDate }: Bu
       label: "Accommodation", 
       amount: hotelTotal, 
       color: "text-primary", 
-      detail: `${days} nights @ $${Math.round(prices.hotelPerNight)}/night`
+      detail: `${days} nights @ $${hotelPerNight}/night`
     },
     { 
       icon: Car, 
@@ -160,20 +96,24 @@ export const BudgetOverview = ({ city, days, travelers, startDate, endDate }: Bu
     },
   ];
 
+  const getSeason = () => {
+    if (!startDate) return 'Standard';
+    const month = startDate.getMonth();
+    if (month >= 5 && month <= 7) return 'Peak Summer';
+    if (month === 4 || month === 8) return 'Shoulder';
+    return 'Off-Season';
+  };
+
   return (
     <Card className="w-full shadow-[var(--shadow-card)] border-border/50 transition-all duration-300 hover:shadow-xl">
       <CardHeader className="bg-gradient-to-r from-primary/10 to-primary-light/10">
         <CardTitle className="text-2xl font-bold text-foreground flex items-center gap-2">
-          {loading ? (
-            <Loader2 className="w-6 h-6 text-primary animate-spin" />
-          ) : (
-            <DollarSign className="w-6 h-6 text-primary" />
-          )}
+          <DollarSign className="w-6 h-6 text-primary" />
           Budget Overview for {days} Days
         </CardTitle>
         <p className="text-sm text-muted-foreground mt-1">
           Traveling to {city} • {travelers} {travelers === 1 ? 'Traveler' : 'Travelers'}
-          {loading && <span className="ml-2 text-primary">(Fetching live prices...)</span>}
+          {startDate && <span className="ml-2">• {getSeason()} Season</span>}
         </p>
       </CardHeader>
       <CardContent className="pt-6">
@@ -206,9 +146,7 @@ export const BudgetOverview = ({ city, days, travelers, startDate, endDate }: Bu
               </span>
             </div>
             <p className="text-xs text-muted-foreground mt-2 text-center">
-              {loading 
-                ? "Fetching live pricing data..." 
-                : "Prices include live data where available and estimates for other categories. Actual costs may vary based on season and availability."}
+              Budget estimates with {getSeason().toLowerCase()} seasonal pricing. Actual costs may vary based on specific dates, availability, and booking timing.
             </p>
           </div>
         </div>
