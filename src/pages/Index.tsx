@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { TripPlannerForm } from "@/components/TripPlannerForm";
 import { BudgetOverview } from "@/components/BudgetOverview";
 import { ItineraryDisplay } from "@/components/ItineraryDisplay";
+import { TravelDetails } from "@/components/TravelDetails";
 import { PhotoGallery } from "@/components/PhotoGallery";
 import { TripNotes } from "@/components/TripNotes";
 import { TravelTips } from "@/components/TravelTips";
@@ -167,6 +168,16 @@ const Index = () => {
                 travelers={tripData.travelers}
                 startDate={tripData.startDate}
                 endDate={tripData.endDate}
+              />
+            </section>
+
+            <section>
+              <TravelDetails
+                origin={tripData.origin}
+                city={tripData.city}
+                startDate={tripData.startDate!}
+                endDate={tripData.endDate!}
+                travelers={tripData.travelers}
               />
             </section>
 
