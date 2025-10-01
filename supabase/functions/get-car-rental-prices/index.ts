@@ -69,20 +69,28 @@ serve(async (req) => {
 
     const carData = await carResponse.json();
     
-    // Extract the lowest price per day
-    const offers = carData.data || [];
-    if (offers.length > 0) {
-      const prices = offers.map((offer: any) => parseFloat(offer.price?.total || 0));
-      const lowestTotal = Math.min(...prices);
-      
-      return new Response(
-        JSON.stringify({ totalPrice: lowestTotal }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    // Format all car rental offers
+    const cars = (carData.data || []).slice(0, 10).map((offer: any) => {
+      const vehicle = offer.vehicle;
+      return {
+        id: offer.id,
+        category: vehicle?.category,
+        type: vehicle?.modelInfo?.vehicleType,
+        transmission: vehicle?.transmission,
+        airConditioning: vehicle?.airConditioning,
+        seats: vehicle?.seats,
+        doors: vehicle?.doors,
+        totalPrice: parseFloat(offer.price?.total || 0),
+        currency: offer.price?.currency || 'USD',
+        mileage: offer.mileage?.unlimited ? 'Unlimited' : offer.mileage?.allowedPerDay,
+        provider: offer.provider?.companyName,
+      };
+    });
+
+    const lowestTotal = cars.length > 0 ? Math.min(...cars.map((c: any) => c.totalPrice)) : null;
 
     return new Response(
-      JSON.stringify({ totalPrice: null }),
+      JSON.stringify({ totalPrice: lowestTotal, cars }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {

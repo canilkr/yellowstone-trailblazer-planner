@@ -53,7 +53,7 @@ serve(async (req) => {
       adults: adults.toString(),
       roomQuantity: '1',
       currency: 'USD',
-      bestRateOnly: 'true',
+      bestRateOnly: 'false',
     });
 
     const hotelResponse = await fetch(
@@ -72,23 +72,28 @@ serve(async (req) => {
 
     const hotelData = await hotelResponse.json();
     
-    // Extract average price per night
-    const offers = hotelData.data || [];
-    if (offers.length > 0) {
-      const totalPrice = offers.reduce((sum: number, hotel: any) => {
-        const price = parseFloat(hotel.offers?.[0]?.price?.total || 0);
-        return sum + price;
-      }, 0);
-      const avgPricePerNight = offers.length > 0 ? totalPrice / offers.length : null;
-      
-      return new Response(
-        JSON.stringify({ pricePerNight: avgPricePerNight }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    // Format all hotel offers
+    const hotels = (hotelData.data || []).slice(0, 10).map((hotel: any) => {
+      const offer = hotel.offers?.[0];
+      return {
+        id: hotel.hotel?.hotelId,
+        name: hotel.hotel?.name || 'Hotel',
+        rating: hotel.hotel?.rating,
+        pricePerNight: parseFloat(offer?.price?.total || 0),
+        currency: offer?.price?.currency || 'USD',
+        roomType: offer?.room?.typeEstimated?.category,
+        beds: offer?.room?.typeEstimated?.beds,
+        amenities: hotel.hotel?.amenities || [],
+        available: offer?.policies?.guarantee?.acceptedPayments?.methods?.length > 0,
+      };
+    });
+
+    const avgPricePerNight = hotels.length > 0 
+      ? hotels.reduce((sum: number, h: any) => sum + h.pricePerNight, 0) / hotels.length 
+      : null;
 
     return new Response(
-      JSON.stringify({ pricePerNight: null }),
+      JSON.stringify({ pricePerNight: avgPricePerNight, hotels }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {

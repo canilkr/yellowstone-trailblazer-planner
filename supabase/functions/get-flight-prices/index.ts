@@ -54,7 +54,7 @@ serve(async (req) => {
       returnDate: returnDate,
       adults: travelers.toString(),
       currencyCode: 'USD',
-      max: '1',
+      max: '10',
     });
 
     const flightResponse = await fetch(
@@ -73,11 +73,37 @@ serve(async (req) => {
 
     const flightData = await flightResponse.json();
     
-    // Extract the lowest price
-    const lowestPrice = flightData.data?.[0]?.price?.total || null;
+    // Extract and format all flight offers
+    const flights = (flightData.data || []).map((offer: any) => {
+      const outbound = offer.itineraries?.[0];
+      const returnFlight = offer.itineraries?.[1];
+      
+      return {
+        id: offer.id,
+        price: parseFloat(offer.price?.total || 0),
+        currency: offer.price?.currency || 'USD',
+        outbound: {
+          departure: outbound?.segments?.[0]?.departure?.at,
+          arrival: outbound?.segments?.[outbound.segments.length - 1]?.arrival?.at,
+          duration: outbound?.duration,
+          stops: outbound?.segments?.length - 1,
+          airline: outbound?.segments?.[0]?.carrierCode,
+        },
+        return: returnFlight ? {
+          departure: returnFlight?.segments?.[0]?.departure?.at,
+          arrival: returnFlight?.segments?.[returnFlight.segments.length - 1]?.arrival?.at,
+          duration: returnFlight?.duration,
+          stops: returnFlight?.segments?.length - 1,
+          airline: returnFlight?.segments?.[0]?.carrierCode,
+        } : null,
+        seatsAvailable: offer.numberOfBookableSeats || 0,
+      };
+    });
+
+    const lowestPrice = flights.length > 0 ? flights[0].price : null;
 
     return new Response(
-      JSON.stringify({ price: lowestPrice ? parseFloat(lowestPrice) : null }),
+      JSON.stringify({ price: lowestPrice, flights }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {

@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Car, MapPin, Users, DollarSign, Fuel } from "lucide-react";
+import { Car, MapPin, Users, DollarSign, Fuel, Gauge } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 
 interface CarRentalDetailsProps {
   startDate: Date;
@@ -12,9 +14,25 @@ interface CarRentalDetailsProps {
   travelers: number;
 }
 
+interface CarOption {
+  id: string;
+  category: string;
+  type: string;
+  transmission: string;
+  airConditioning: boolean;
+  seats: number;
+  doors: number;
+  totalPrice: number;
+  currency: string;
+  mileage: string;
+  provider: string;
+}
+
 export function CarRentalDetails({ startDate, endDate, travelers }: CarRentalDetailsProps) {
   const [loading, setLoading] = useState(false);
   const [totalPrice, setTotalPrice] = useState<number | null>(null);
+  const [cars, setCars] = useState<CarOption[]>([]);
+  const [showDialog, setShowDialog] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -34,6 +52,7 @@ export function CarRentalDetails({ startDate, endDate, travelers }: CarRentalDet
 
       if (error) throw error;
       setTotalPrice(data?.totalPrice || null);
+      setCars(data?.cars || []);
     } catch (error) {
       console.error('Error fetching car rental prices:', error);
       toast({
@@ -111,8 +130,8 @@ export function CarRentalDetails({ startDate, endDate, travelers }: CarRentalDet
             <p className="text-xs text-muted-foreground">Includes unlimited mileage</p>
           </div>
 
-          <Button className="w-full" variant="default">
-            View SUV Options
+          <Button className="w-full" variant="default" onClick={() => setShowDialog(true)}>
+            View All Car Options
           </Button>
         </div>
 
@@ -140,6 +159,67 @@ export function CarRentalDetails({ startDate, endDate, travelers }: CarRentalDet
           <p className="mt-2">Prices include standard insurance. Additional coverage available at checkout.</p>
         </div>
       </CardContent>
+
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Available Car Rentals</DialogTitle>
+            <DialogDescription>
+              Jackson Hole Airport - {days} day{days > 1 ? 's' : ''}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            {cars.length === 0 ? (
+              <p className="text-center text-muted-foreground py-8">No cars found. Try different dates.</p>
+            ) : (
+              cars.map((car) => (
+                <Card key={car.id}>
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg mb-1">
+                          {car.category || car.type || 'Vehicle'}
+                        </h3>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="secondary">{car.provider || 'Rental Company'}</Badge>
+                          {car.airConditioning && (
+                            <Badge variant="outline" className="text-xs">A/C</Badge>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground mb-2">
+                          <span className="flex items-center gap-1">
+                            <Users className="h-4 w-4" />
+                            {car.seats} seats
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Car className="h-4 w-4" />
+                            {car.doors} doors
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Fuel className="h-4 w-4" />
+                            {car.transmission}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Gauge className="h-4 w-4" />
+                            {car.mileage}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-right ml-4">
+                        <div className="text-2xl font-bold">${car.totalPrice.toFixed(0)}</div>
+                        <div className="text-sm text-muted-foreground">total for {days} days</div>
+                        <div className="mt-2 text-sm font-medium">
+                          ${Math.round(car.totalPrice / days)}/day
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
