@@ -9,7 +9,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Badge } from "@/components/ui/badge";
 
 interface HotelDetailsProps {
-  city: string;
   startDate: Date;
   endDate: Date;
   travelers: number;
@@ -27,7 +26,7 @@ interface HotelOption {
   available: boolean;
 }
 
-export function HotelDetails({ city, startDate, endDate, travelers }: HotelDetailsProps) {
+export function HotelDetails({ startDate, endDate, travelers }: HotelDetailsProps) {
   const [loading, setLoading] = useState(false);
   const [pricePerNight, setPricePerNight] = useState<number | null>(null);
   const [hotels, setHotels] = useState<HotelOption[]>([]);
@@ -36,7 +35,7 @@ export function HotelDetails({ city, startDate, endDate, travelers }: HotelDetai
 
   useEffect(() => {
     fetchHotelPrices();
-  }, [city, startDate, endDate, travelers]);
+  }, [startDate, endDate, travelers]);
 
   const fetchHotelPrices = async () => {
     setLoading(true);

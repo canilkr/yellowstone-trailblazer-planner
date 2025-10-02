@@ -6,13 +6,12 @@ import { Card } from "@/components/ui/card";
 
 interface TravelDetailsProps {
   origin: string;
-  city: string;
   startDate: Date;
   endDate: Date;
   travelers: number;
 }
 
-export function TravelDetails({ origin, city, startDate, endDate, travelers }: TravelDetailsProps) {
+export function TravelDetails({ origin, startDate, endDate, travelers }: TravelDetailsProps) {
   return (
     <Card className="w-full">
       <Tabs defaultValue="flights" className="w-full">
@@ -25,7 +24,7 @@ export function TravelDetails({ origin, city, startDate, endDate, travelers }: T
         <TabsContent value="flights" className="mt-6">
           <FlightDetails 
             origin={origin}
-            destination={city}
+            destination="JAC"
             startDate={startDate}
             endDate={endDate}
             travelers={travelers}
@@ -34,7 +33,6 @@ export function TravelDetails({ origin, city, startDate, endDate, travelers }: T
         
         <TabsContent value="hotels" className="mt-6">
           <HotelDetails 
-            city={city}
             startDate={startDate}
             endDate={endDate}
             travelers={travelers}

@@ -24,7 +24,6 @@ const Index = () => {
   const { user } = useAuth();
   const [tripData, setTripData] = useState<{ 
     origin: string;
-    city: string; 
     days: number; 
     travelers: number;
     startDate?: Date;
@@ -32,8 +31,8 @@ const Index = () => {
   } | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const handlePlanTrip = (origin: string, city: string, days: number, travelers: number, startDate?: Date, endDate?: Date) => {
-    setTripData({ origin, city, days, travelers, startDate, endDate });
+  const handlePlanTrip = (origin: string, days: number, travelers: number, startDate?: Date, endDate?: Date) => {
+    setTripData({ origin, days, travelers, startDate, endDate });
     // Smooth scroll to budget overview
     setTimeout(() => {
       document.getElementById("trip-overview")?.scrollIntoView({ behavior: "smooth" });
@@ -63,7 +62,7 @@ const Index = () => {
       setSaving(true);
       const { error } = await supabase.from("saved_trips").insert({
         user_id: user.id,
-        destination: tripData.city,
+        destination: "Yellowstone National Park",
         start_date: tripData.startDate.toISOString().split('T')[0],
         end_date: tripData.endDate.toISOString().split('T')[0],
         days: tripData.days,
@@ -163,7 +162,6 @@ const Index = () => {
             <section>
               <BudgetOverview 
                 origin={tripData.origin}
-                city={tripData.city} 
                 days={tripData.days} 
                 travelers={tripData.travelers}
                 startDate={tripData.startDate}
@@ -174,7 +172,6 @@ const Index = () => {
             <section>
               <TravelDetails
                 origin={tripData.origin}
-                city={tripData.city}
                 startDate={tripData.startDate!}
                 endDate={tripData.endDate!}
                 travelers={tripData.travelers}

@@ -11,13 +11,12 @@ import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface TripPlannerFormProps {
-  onPlanTrip: (origin: string, city: string, days: number, travelers: number, startDate?: Date, endDate?: Date) => void;
+  onPlanTrip: (origin: string, days: number, travelers: number, startDate?: Date, endDate?: Date) => void;
 }
 
 export const TripPlannerForm = ({ onPlanTrip }: TripPlannerFormProps) => {
   const { t } = useLanguage();
   const [origin, setOrigin] = useState("");
-  const [city, setCity] = useState("");
   const [days, setDays] = useState(3);
   const [travelers, setTravelers] = useState(2);
   const [startDate, setStartDate] = useState<Date>();
@@ -35,8 +34,8 @@ export const TripPlannerForm = ({ onPlanTrip }: TripPlannerFormProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (origin.trim() && city.trim()) {
-      onPlanTrip(origin, city, days, travelers, startDate, endDate);
+    if (origin.trim()) {
+      onPlanTrip(origin, days, travelers, startDate, endDate);
     }
   };
 
@@ -52,35 +51,21 @@ export const TripPlannerForm = ({ onPlanTrip }: TripPlannerFormProps) => {
           <div className="space-y-2">
             <Label htmlFor="origin" className="text-foreground flex items-center gap-2">
               <MapPin className="w-4 h-4 text-primary" />
-              Origin City
+              Your Departure City
             </Label>
             <Input
               id="origin"
               type="text"
-              placeholder="e.g., Austin"
+              placeholder="e.g., Austin, Dallas, Denver"
               value={origin}
               onChange={(e) => setOrigin(e.target.value)}
               required
               className="bg-background border-border focus:ring-primary transition-all duration-200 focus:scale-[1.02]"
               aria-required="true"
             />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="city" className="text-foreground flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-primary" />
-              {t("form.city")}
-            </Label>
-            <Input
-              id="city"
-              type="text"
-              placeholder={t("form.city.placeholder")}
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              required
-              className="bg-background border-border focus:ring-primary transition-all duration-200 focus:scale-[1.02]"
-              aria-required="true"
-            />
+            <p className="text-xs text-muted-foreground">
+              Destination: Yellowstone National Park (Jackson Hole, WY)
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
